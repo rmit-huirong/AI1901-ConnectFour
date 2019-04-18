@@ -1,11 +1,11 @@
 from connectfour.agents.computer_player import RandomAgent
 import random
 
+
 class StudentAgent(RandomAgent):
     def __init__(self, name):
         super().__init__(name)
         self.MaxDepth = 1
-
 
     def get_move(self, board):
         """
@@ -22,15 +22,15 @@ class StudentAgent(RandomAgent):
 
         for move in valid_moves:
             next_state = board.next_state(self.id, move[1])
-            moves.append( move )
-            vals.append( self.dfMiniMax(next_state, 1) )
+            moves.append(move)
+            vals.append(self.dfMiniMax(next_state, 1))
 
-        bestMove = moves[vals.index( max(vals) )]
+        bestMove = moves[vals.index(max(vals))]
         return bestMove
 
     def dfMiniMax(self, board, depth):
         # Goal return column with maximized scores of all possible next states
-        
+
         if depth == self.MaxDepth:
             return self.evaluateBoardState(board)
 
@@ -43,11 +43,10 @@ class StudentAgent(RandomAgent):
                 next_state = board.next_state(self.id % 2 + 1, move[1])
             else:
                 next_state = board.next_state(self.id, move[1])
-                
-            moves.append( move )
-            vals.append( self.dfMiniMax(next_state, depth + 1) )
 
-        
+            moves.append(move)
+            vals.append(self.dfMiniMax(next_state, depth + 1))
+
         if depth % 2 == 1:
             bestVal = min(vals)
         else:
@@ -63,7 +62,7 @@ class StudentAgent(RandomAgent):
             If we have won the game, return 1.
             If neither of the players has won, return a random number.
         """
-        
+
         """
         These are the variables and functions for board objects which may be helpful when creating your Agent.
         Look into board.py for more information/descriptions of each, or to look for any other definitions which may help you.
@@ -87,6 +86,5 @@ class StudentAgent(RandomAgent):
             next_state(turn)
             winner()
         """
-				
-        return random.uniform(0, 1)
 
+        return random.uniform(0, 1)
