@@ -27,9 +27,9 @@ class StudentAgent(Agent):
             vals.append(self.dfMiniMax(next_state, 1))
 
         bestMove = moves[vals.index(max(vals))]
-        print(f"Place at: {bestMove}")
-        print(f"Evaluation: {vals}")
-        print("-----")
+        print(f"The Agent is going to place the token at: {bestMove}")
+        print(f"Evaluation of utility values: {vals}")
+        print("------------------------------------------------------------------------------------------------")
         return bestMove
 
     def dfMiniMax(self, board, depth):
@@ -95,96 +95,92 @@ class StudentAgent(Agent):
         move = board.last_move
         print(move[0], move[1])
 
-        # check if bottom middle cell is empty
-        # if move[0] == 5 and move[1] == 3:
-        #     print("Value is ", board.get_cell_value(5, 3))
-        #     return 7
-        # else:
+        return self.checkRows(board) + self.checkCols(board) + self.checkBackwardDiagonal(board) + self.checkForwardDiagonal(board)
 
-
-        return self.checkLeftRows(board)
-
-        # return random.uniform(0, 1)
-
-    # check if there can be possible win in rows for this valid move
-    def checkLeftRows(self, board):
-
-        # if 0 <= move[1] <= 3:
-        #     if move[1] + board.num_to_connect - 1 <= board.DEFAULT_WIDTH - 1:
-        #         for i in range(1, board.num_to_connect):
-        #             if board.get_cell_value(move[0], move[1] + i) == self.id or board.get_cell_value(move[0], move[1] + i) == 0:
-        #                 same_count += 1
-        #         if same_count == board.num_to_connect:
-        #             value += 1
-        #
-        #     if move[1] + board.num_to_connect - 2 <= board.DEFAULT_WIDTH - 1:
-        #         same_count = 1
-        #         if move[1] - 1 >= 0 and (board.get_cell_value(move[0], move[1] - 1) == self.id or board.get_cell_value(move[0], move[1] - 1) == 0):
-        #             print("Cell ", move[0], move[1] - 1)
-        #             same_count += 1
-        #             for i in range(1, board.num_to_connect - 1):
-        #                 if board.get_cell_value(move[0], move[1] + i) == self.id or board.get_cell_value(move[0], move[1] + i) == 0:
-        #                     same_count += 1
-        #             if same_count == board.num_to_connect:
-        #                 value += 1
-
-        #                i == 1,  2,  3
+    # check rows
+    def checkRows(self, board):
 
         value = 0
-        move = board.last_move
-        pre_cell_value = []
-        stuck = False
 
-        # when it is potentially to be placed on left part of the board
-        if 0 <= move[1] <= 3:
-            # move[1] = 0
-            same_count = 1
-            for k in range(1, board.num_to_connect):
-                if board.get_cell_value(move[0], move[1] + k) == self.id or board.get_cell_value(move[0],move[1] + k) == 0:
-                    same_count += 1
-                if same_count == board.num_to_connect:
+        # 0 <= x < 6
+        for x in range(0, board.DEFAULT_HEIGHT):
+
+            # 0 <= y < 4
+            for y in range(0, board.DEFAULT_WIDTH - board.num_to_connect + 1):
+                temp = []
+                for col in range(0, board.num_to_connect):
+                    temp.append(board.get_cell_value(x, y + col))
+                # print(temp)
+                has_oppo = False
+                for curr in temp:
+                    if curr != self.id and curr != 0:
+                        has_oppo = True
+                if has_oppo is False and temp.__contains__(self.id):
                     value += 1
-                    print("common value: ", value)
-            for i in range(1, move[1] + 1):
-                print("start pre: ", pre_cell_value)
-                for pre_value in pre_cell_value:
-                    if pre_value == -1:
-                        stuck = True
-                print("startasdfe: ", pre_cell_value)
-                if stuck is True:
-                    same_count = 1
-                    for k in range(1, board.num_to_connect):
-                        if board.get_cell_value(move[0], move[1] + k) == self.id or board.get_cell_value(move[0], move[1] + k) == 0:
-                            same_count += 1
-                        if same_count == board.num_to_connect:
-                            print("if stuck in pre cell")
-                            value += 1
-                if stuck is False and move[1] - i >= 0 and (board.get_cell_value(move[0], move[1] - i) == self.id or board.get_cell_value(move[0], move[1] - i) == 0):
-                    print("starghfghftasdfe: ", pre_cell_value)
-                    same_count = 1
-                    pre_cell_value.append(self.id)
-                    print("startasdfffgfgfgfge: ", pre_cell_value)
-                    same_count += i
-                    rest = board.num_to_connect - i
-                    print(rest)
-                    for j in range(1, rest):
-                        # move[1] + j won't be out of bounds because 0 <= move[1] <= 3
-                        if move[1] + j >= board.DEFAULT_WIDTH or (board.get_cell_value(move[0], move[1] + j) != self.id and board.get_cell_value(move[0], move[1] + j) != 0):
-                            print("break")
-                            break
-                        else:
-                            same_count += 1
-                    if same_count == board.num_to_connect:
-                        value += 1
-                        print("count: ", same_count, " value: ", value)
-                        print("if not stuck and can have 4 in row", " get i: ", i)
-                        print("pre: ", pre_cell_value)
-                else:
-                    print("sds")
-                    pre_cell_value.append(-1)
-                    print("count: ", same_count, " value: ", value)
-                    print("stuck is false and move[0], move[1] - i is self.id2", " get i: ", i)
-                    continue
-
         return value
 
+    # check columns
+    def checkCols(self, board):
+
+        value = 0
+
+        # 0 <= y < 7
+        for y in range(0, board.DEFAULT_WIDTH):
+
+            # 0 <= x < 3
+            for x in range(0, board.DEFAULT_HEIGHT - board.num_to_connect + 1):
+                temp = []
+                for row in range(0, board.num_to_connect):
+                    temp.append(board.get_cell_value(x + row, y))
+                # print(temp)
+                has_oppo = False
+                for curr in temp:
+                    if curr != self.id and curr != 0:
+                        has_oppo = True
+                if has_oppo is False and temp.__contains__(self.id):
+                    value += 1
+        return value
+
+    # check backward diagonal /
+    def checkBackwardDiagonal(self, board):
+
+        value = 0
+
+        # 3 <= x <= 5
+        for x in range(3, board.DEFAULT_HEIGHT):
+
+            # 0 <= y < 4
+            for y in range(0, board.DEFAULT_WIDTH - board.num_to_connect + 1):
+                temp = []
+                for back_diag in range(0, board.num_to_connect):
+                    temp.append(board.get_cell_value(x - back_diag, y + back_diag))
+                # print(temp)
+                has_oppo = False
+                for curr in temp:
+                    if curr != self.id and curr != 0:
+                        has_oppo = True
+                if has_oppo is False and temp.__contains__(self.id):
+                    value += 1
+        return value
+
+    # check forward diagonal \
+    def checkForwardDiagonal(self, board):
+
+        value = 0
+
+        # 0 <= x < 3
+        for x in range(0, board.DEFAULT_HEIGHT - board.num_to_connect + 1):
+
+            # 0 <= y < 4
+            for y in range(0, board.DEFAULT_WIDTH - board.num_to_connect + 1):
+                temp = []
+                for for_diag in range(0, board.num_to_connect):
+                    temp.append(board.get_cell_value(x + for_diag, y + for_diag))
+                # print(temp)
+                has_oppo = False
+                for curr in temp:
+                    if curr != self.id and curr != 0:
+                        has_oppo = True
+                if has_oppo is False and temp.__contains__(self.id):
+                    value += 1
+        return value
