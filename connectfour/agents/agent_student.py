@@ -27,9 +27,9 @@ class StudentAgent(Agent):
             vals.append(self.dfMiniMax(next_state, 1))
 
         bestMove = moves[vals.index(max(vals))]
-        print(f"The Agent is going to place the token at: {bestMove}")
-        print(f"Evaluation of utility values: {vals}")
-        print("------------------------------------------------------------------------------------------------")
+        # print(f"The Agent is going to place the token at: {bestMove}")
+        # print(f"Evaluation of utility values: {vals}")
+        # print("------------------------------------------------------------------------------------------------")
         return bestMove
 
     def dfMiniMax(self, board, depth):
@@ -92,8 +92,8 @@ class StudentAgent(Agent):
         """
 
         # print the valid moves on board for current player
-        move = board.last_move
-        print(move[0], move[1])
+        # move = board.last_move
+        # print(move[0], move[1])
 
         return self.checkRows(board) + self.checkCols(board) + self.checkBackwardDiagonal(board) + self.checkForwardDiagonal(board)
 
