@@ -146,8 +146,8 @@ class StudentAgent(Agent):
 
         value = 0
 
-        # 3 <= x <= 5
-        for x in range(3, board.DEFAULT_HEIGHT):
+        # 3 <= x < 6
+        for x in range(board.num_to_connect - 1, board.DEFAULT_HEIGHT):
 
             # 0 <= y < 4
             for y in range(0, board.DEFAULT_WIDTH - board.num_to_connect + 1):
