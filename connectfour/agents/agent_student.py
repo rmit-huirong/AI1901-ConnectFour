@@ -143,7 +143,7 @@ class StudentAgent(Agent):
                     # condition: [1,X,1,1] place "1" in X cell, must win in this move
                     #         -> [1,1,1,1]
                     if temp.count(self.id) == 4:
-                        print("win: [1,1,1,1]")
+                        print("win: [1,X,1,1]")
                         return 1000000
 
                     # if there are only three my side tokens
@@ -155,13 +155,14 @@ class StudentAgent(Agent):
                             #         -> [_,1,1,1,2] or [2,1,1,1,_]
                             #     win -> [1,1,1,1,2] or [2,1,1,1,1]
                             if x == board.last_move[0] and y + temp.index(self.id) + 1 == board.last_move[1] and board.get_cell_value(x, y) == 0 and board.get_cell_value(x, y + board.num_to_connect) == 0:
-                                next_board1 = board.next_state(enemy, y - (board.num_to_connect - 1 - 1))
-                                next_board2 = board.next_state(enemy, y + (board.num_to_connect - 1 - 1))
+                                next_board1 = board.next_state(enemy, y)
+                                next_board2 = board.next_state(enemy, y + board.num_to_connect)
                                 if next_board1 != 0 and next_board2 != 0:
-                                    print("winnable: [_,1,1,1,_]")
+                                    print("winnable: [_,1,X,1,_]")
                                     myValue += 10000
                         else:
                             myValue += 100
+
                     # if there are one or two my side token(s)
                     else:
                         myValue += temp.count(self.id)
@@ -229,7 +230,6 @@ class StudentAgent(Agent):
 
                     # if there are only three enemy's tokens
                     if temp.count(enemy) == 3:
-
                         next_board = board.next_state(enemy, y + temp.index(0))
                         if next_board != 0:
 
@@ -262,7 +262,7 @@ class StudentAgent(Agent):
                     # the rest of the conditions
                     else:
                         print("other conditions")
-                        myValue += temp.count(enemy)
+                        enemyValue += temp.count(enemy)
         return myValue - enemyValue
 
     # check columns
