@@ -1,6 +1,13 @@
 from connectfour.agents.agent import Agent
-from connectfour.agents.computer_player import RandomAgent
-import random
+
+"""
+Student Name:
+    Huirong Huang
+
+Student ID:
+    s3615907
+    
+"""
 
 
 class StudentAgent(Agent):
@@ -155,10 +162,12 @@ class StudentAgent(Agent):
                 if enemy_has_oppo is False and temp.__contains__(enemy):
                     print("enemy")
                     if temp.count(enemy) == 3:
+
                         next_board = board.next_state(enemy, y + temp.index(0))
                         if next_board != 0:
-                            print("count 3, must lose row")
-                            return -10000
+                            if x == board.last_move[0] - 1:
+                                print("count 3, must lose row")
+                                return -10000
                         else:
                             print("count 3, may lose row")
                             enemyValue += 10
@@ -261,8 +270,9 @@ class StudentAgent(Agent):
                     if temp.count(enemy) == 3:
                         next_board = board.next_state(enemy, y + temp.index(0))
                         if next_board != 0:
-                            # print("count 3, must lose b diag")
-                            return -10000
+                            if x - temp.index(0) == board.last_move[0] - 1:
+                                # print("count 3, must lose b diag")
+                                return -10000
                         else:
                             # print("count 3, may lose b diag")
                             enemyValue += 10
@@ -311,8 +321,9 @@ class StudentAgent(Agent):
                     if temp.count(enemy) == 3:
                         next_board = board.next_state(enemy, y + temp.index(0))
                         if next_board != 0:
-                            # print("count 3, must lose f diag")
-                            return -10000
+                            if x + temp.index(0) == board.last_move[0] - 1:
+                                # print("count 3, must lose f diag")
+                                return -10000
                         else:
                             # print("count 3, may lose f diag")
                             enemyValue += 10
