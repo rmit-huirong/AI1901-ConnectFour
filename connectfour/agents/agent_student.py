@@ -103,6 +103,7 @@ class StudentAgent(Agent):
         move = board.last_move
         print("current: ", move[0], move[1])
 
+        # enemy agent's id
         enemy = self.id % 2 + 1
 
         return self.checkRows(board, enemy) + self.checkCols(board, enemy) + self.checkBackwardDiagonals(board, enemy) + self.checkForwardDiagonals(board, enemy)
