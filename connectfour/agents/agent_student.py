@@ -99,7 +99,7 @@ class StudentAgent(Agent):
             winner()
         """
 
-        # # print the valid moves on board for current player
+        # print the valid moves on board for current player
         move = board.last_move
         print("current: ", move[0], move[1])
 
@@ -121,7 +121,7 @@ class StudentAgent(Agent):
                 temp = []
                 for col in range(0, board.num_to_connect):
                     temp.append(board.get_cell_value(x, y + col))
-                # print(x, y)
+                print(x, y)
                 has_oppo = False
                 enemy_has_oppo = False
                 for curr in temp:
@@ -130,6 +130,7 @@ class StudentAgent(Agent):
                     if curr == self.id:
                         enemy_has_oppo = True
                 if has_oppo is False and temp.__contains__(self.id):
+                    print("WTF")
                     if temp.count(self.id) == 4:
                         print("Count 4, win row")
                         return 1000000
@@ -138,17 +139,6 @@ class StudentAgent(Agent):
                 if enemy_has_oppo is True:
 
                     if temp.count(enemy) == 3:
-                        print("gasdf")
-                        print("X: ", x)
-                        print("Y: ", y)
-                        print("y + col: ", y + temp.index(self.id))
-                        print("curr: ", board.last_move[0], board.last_move[1])
-
-                        if board.last_move[0] == x:
-                            print("ok1")
-                        if board.last_move[1] == y + temp.index(self.id):
-                            print("ok2")
-
                         if board.last_move[0] == x and board.last_move[1] == y + temp.index(self.id):
                             print("NO")
                             return 100000
@@ -172,7 +162,7 @@ class StudentAgent(Agent):
                             print("count 3, may lose row")
                             enemyValue += 10
                     else:
-                        # print("hgdhd")
+                        print("hgdhd")
                         myValue += temp.count(enemy)
         return myValue - enemyValue
 
@@ -190,7 +180,7 @@ class StudentAgent(Agent):
                 temp = []
                 for row in range(0, board.num_to_connect):
                     temp.append(board.get_cell_value(x + row, y))
-                # # print(temp)
+                # print(temp)
                 has_oppo = False
                 enemy_has_oppo = False
                 for curr in temp:
@@ -241,7 +231,7 @@ class StudentAgent(Agent):
                 temp = []
                 for back_diag in range(0, board.num_to_connect):
                     temp.append(board.get_cell_value(x - back_diag, y + back_diag))
-                # # print(temp)
+                # print(temp)
                 has_oppo = False
                 enemy_has_oppo = False
                 for curr in temp:
@@ -292,7 +282,7 @@ class StudentAgent(Agent):
                 temp = []
                 for for_diag in range(0, board.num_to_connect):
                     temp.append(board.get_cell_value(x + for_diag, y + for_diag))
-                # # print(temp)
+                # print(temp)
                 has_oppo = False
                 enemy_has_oppo = False
                 for curr in temp:
