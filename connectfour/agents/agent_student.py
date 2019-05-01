@@ -98,6 +98,7 @@ class StudentAgent(Agent):
 
         players = (1, 2)
         enemy = self.getEnemyAgentID(players)
+
         return self.checkRows(board, enemy) + self.checkCols(board, enemy) + self.checkBackwardDiagonals(board, enemy) + self.checkForwardDiagonals(board, enemy)
 
     # check if the current player is StudentAgent itself
@@ -131,9 +132,20 @@ class StudentAgent(Agent):
                     if curr == self.id:
                         enemy_has_oppo = True
                 if has_oppo is False and temp.__contains__(self.id):
-                    myValue += temp.count(self.id)
+                    if temp.count(self.id) == 4:
+                        print("Count 4, win row")
+                        return 10000
+                    elif temp.count(self.id) == 3:
+                        print("Count 3, row")
+                        myValue += 100
+                    else:
+                        myValue += temp.count(self.id)
                 if enemy_has_oppo is False and temp.__contains__(enemy):
-                    enemyValue += temp.count(enemy)
+                    if temp.count(enemy) == 3:
+                        print("count 3, lose row")
+                        return -10000
+                    else:
+                        myValue += temp.count(enemy)
         return myValue - enemyValue
 
     # check columns
@@ -159,9 +171,20 @@ class StudentAgent(Agent):
                     if curr == self.id:
                         enemy_has_oppo = True
                 if has_oppo is False and temp.__contains__(self.id):
-                    myValue += temp.count(self.id)
+                    if temp.count(self.id) == 4:
+                        print("Count 4, win col")
+                        return 10000
+                    elif temp.count(self.id) == 3:
+                        print("Count 3, col")
+                        myValue += 100
+                    else:
+                        myValue += temp.count(self.id)
                 if enemy_has_oppo is False and temp.__contains__(enemy):
-                    enemyValue += temp.count(enemy)
+                    if temp.count(enemy) == 3:
+                        print("Count 3, lose col")
+                        return -10000
+                    else:
+                        myValue += temp.count(enemy)
         return myValue - enemyValue
 
     # check backward diagonal /
@@ -187,9 +210,20 @@ class StudentAgent(Agent):
                     if curr == self.id:
                         enemy_has_oppo = True
                 if has_oppo is False and temp.__contains__(self.id):
-                    myValue += temp.count(self.id)
+                    if temp.count(self.id) == 4:
+                        print("Count 4, win b diag")
+                        return 10000
+                    elif temp.count(self.id) == 3:
+                        print("Count 3, b diag")
+                        myValue += 100
+                    else:
+                        myValue += temp.count(self.id)
                 if enemy_has_oppo is False and temp.__contains__(enemy):
-                    enemyValue += temp.count(enemy)
+                    if temp.count(enemy) == 3:
+                        print("Count 4, lose b diag")
+                        return -10000
+                    else:
+                        myValue += temp.count(enemy)
         return myValue - enemyValue
 
     # check forward diagonal \
@@ -215,7 +249,18 @@ class StudentAgent(Agent):
                     if curr == self.id:
                         enemy_has_oppo = True
                 if has_oppo is False and temp.__contains__(self.id):
-                    myValue += temp.count(self.id)
+                    if temp.count(self.id) == 4:
+                        print("Count 4, win f diag")
+                        return 10000
+                    elif temp.count(self.id) == 3:
+                        print("Count 3, f diag")
+                        myValue += 100
+                    else:
+                        myValue += temp.count(self.id)
                 if enemy_has_oppo is False and temp.__contains__(enemy):
-                    enemyValue += temp.count(enemy)
+                    if temp.count(enemy) == 3:
+                        print("Count 3, lose f diag")
+                        return -10000
+                    else:
+                        myValue += temp.count(enemy)
         return myValue - enemyValue
