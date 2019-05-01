@@ -95,7 +95,7 @@ class StudentAgent(Agent):
         # move = board.last_move
         # print(move[0], move[1])
 
-        return self.checkRows(board) + self.checkCols(board) + self.checkBackwardDiagonal(board) + self.checkForwardDiagonal(board)
+        return self.checkRows(board) + self.checkCols(board) + self.checkBackwardDiagonals(board) + self.checkForwardDiagonals(board)
 
     # check rows
     def checkRows(self, board):
