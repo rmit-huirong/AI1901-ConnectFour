@@ -142,7 +142,7 @@ class StudentAgent(Agent):
         return value
 
     # check backward diagonal /
-    def checkBackwardDiagonal(self, board):
+    def checkBackwardDiagonals(self, board):
 
         value = 0
 
@@ -164,7 +164,7 @@ class StudentAgent(Agent):
         return value
 
     # check forward diagonal \
-    def checkForwardDiagonal(self, board):
+    def checkForwardDiagonals(self, board):
 
         value = 0
 
