@@ -134,21 +134,28 @@ class StudentAgent(Agent):
                     if temp.count(self.id) == 4:
                         print("Count 4, win row")
                         return 1000000
+                    elif temp.count(self.id) == 3:
+                        if y + board.num_to_connect < board.DEFAULT_WIDTH:
+                            print("x: ", x)
+                            print("x,y: ", board.last_move[0], board.last_move[1])
+                            print("y: ", y)
+                            print("temp.index: ", temp.index(self.id))
+                            if x == board.last_move[0] and y + temp.index(self.id) + 1 == board.last_move[1] and board.get_cell_value(x, y) == 0 and board.get_cell_value(x, y + board.num_to_connect) == 0:
+                                myValue += 10000
                     else:
                         myValue += temp.count(self.id)
                 if enemy_has_oppo is True:
-
                     if temp.count(enemy) == 3:
                         if board.last_move[0] == x and board.last_move[1] == y + temp.index(self.id):
                             print("NO")
-                            return 100000
+                            myValue += 100000
                     elif temp.count(enemy) == 2:
                         if x == board.last_move[0] and y == board.last_move[1] and temp[temp.index(enemy) + 1] == enemy and temp.index(enemy) in range(1, board.num_to_connect - 2):
                             print("Yeah")
-                            return 10000
+                            myValue += 10000
                         if y + board.num_to_connect < board.DEFAULT_WIDTH:
                             if x == board.last_move[0] and y + temp.index(self.id) == board.last_move[1] and board.get_cell_value(x, y) == 0 and board.get_cell_value(x, y + board.num_to_connect) == 0:
-                                return 10000
+                                myValue += 10000
                 if enemy_has_oppo is False and temp.__contains__(enemy):
                     print("enemy")
                     if temp.count(enemy) == 3:
@@ -157,7 +164,7 @@ class StudentAgent(Agent):
                         if next_board != 0:
                             if x == board.last_move[0] - 1:
                                 print("count 3, must lose row")
-                                return -10000
+                                enemyValue += 10000
                         else:
                             print("count 3, may lose row")
                             enemyValue += 10
@@ -197,18 +204,18 @@ class StudentAgent(Agent):
                 if enemy_has_oppo is True:
                     if temp.count(enemy) == 3:
                         if board.last_move[0] == x + temp.index(self.id) and board.last_move[1] == y + temp.index(self.id):
-                            return 100000
+                            myValue += 100000
                     elif temp.count(enemy) == 2:
                         if x == board.last_move[0] and y == board.last_move[1] and temp[temp.index(enemy) + 1] == enemy and temp.index(enemy) in range(1, board.num_to_connect - 2):
                             # print("Yeah")
-                            return 10000
+                            myValue += 10000
                 if enemy_has_oppo is False and temp.__contains__(enemy):
                     # print("enemy")
                     if temp.count(enemy) == 3:
                         next_board = board.next_state(enemy, y + temp.index(0))
                         if next_board != 0:
                             # print("count 3, must lose col")
-                            return -10000
+                            enemyValue += 10000
                         else:
                             # print("count 3, may lose col")
                             enemyValue += 10
@@ -248,21 +255,21 @@ class StudentAgent(Agent):
                 if enemy_has_oppo is True:
                     if temp.count(enemy) == 3:
                         if board.last_move[0] == x - temp.index(self.id) and board.last_move[1] == y + temp.index(self.id):
-                            return 100000
+                            myValue += 100000
                     elif temp.count(enemy) == 2:
                         if board.last_move[0] == x and board.last_move[1] == y and temp[temp.index(enemy) + 1] == enemy and temp.index(enemy) in range(1, board.num_to_connect - 2):
                             # print("Yeah")
-                            return 10000
+                            myValue += 10000
                         if y + board.num_to_connect < board.DEFAULT_WIDTH:
                             if x - temp.index(self.id) == board.last_move[0] and y + temp.index(self.id) == board.last_move[1] and board.get_cell_value(x, y) == 0 and board.get_cell_value(x, y + board.num_to_connect) == 0:
-                                return 10000
+                                myValue += 10000
                 if enemy_has_oppo is False and temp.__contains__(enemy):
                     if temp.count(enemy) == 3:
                         next_board = board.next_state(enemy, y + temp.index(0))
                         if next_board != 0:
                             if x - temp.index(0) == board.last_move[0] - 1:
                                 # print("count 3, must lose b diag")
-                                return -10000
+                                enemyValue += 10000
                         else:
                             # print("count 3, may lose b diag")
                             enemyValue += 10
@@ -299,21 +306,21 @@ class StudentAgent(Agent):
                 if enemy_has_oppo is True:
                     if temp.count(enemy) == 3:
                         if board.last_move[0] == x + temp.index(self.id) and board.last_move[1] == y + temp.index(self.id):
-                            return 100000
+                            myValue += 100000
                     elif temp.count(enemy) == 2:
                         if board.last_move[0] == x and board.last_move[1] == y and temp[temp.index(enemy) + 1] == enemy and temp.index(enemy) in range(1, board.num_to_connect - 2):
                             # print("Yeah")
-                            return 10000
+                            myValue += 10000
                         if y + board.num_to_connect < board.DEFAULT_WIDTH:
                             if x + temp.index(self.id) == board.last_move[0] and y + temp.index(self.id) == board.last_move[1] and board.get_cell_value(x, y) == 0 and board.get_cell_value(x, y + board.num_to_connect) == 0:
-                                return 10000
+                                myValue += 10000
                 if enemy_has_oppo is False and temp.__contains__(enemy):
                     if temp.count(enemy) == 3:
                         next_board = board.next_state(enemy, y + temp.index(0))
                         if next_board != 0:
                             if x + temp.index(0) == board.last_move[0] - 1:
                                 # print("count 3, must lose f diag")
-                                return -10000
+                                enemyValue += 10000
                         else:
                             # print("count 3, may lose f diag")
                             enemyValue += 10
