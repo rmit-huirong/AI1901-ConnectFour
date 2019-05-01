@@ -4,6 +4,7 @@ import random
 
 
 class StudentAgent(Agent):
+
     def __init__(self, name):
         super().__init__(name)
         self.MaxDepth = 1
@@ -28,7 +29,7 @@ class StudentAgent(Agent):
 
         bestMove = moves[vals.index(max(vals))]
         # print(f"The Agent is going to place the token at: {bestMove}")
-        # print(f"Evaluation of utility values: {vals}")
+        print(f"Evaluation of utility values: {vals}")
         # print("------------------------------------------------------------------------------------------------")
         return bestMove
 
@@ -95,12 +96,23 @@ class StudentAgent(Agent):
         # move = board.last_move
         # print(move[0], move[1])
 
-        return self.checkRows(board) + self.checkCols(board) + self.checkBackwardDiagonals(board) + self.checkForwardDiagonals(board)
+        players = (1, 2)
+        enemy = self.getEnemyAgentID(players)
+        return self.checkRows(board, enemy) + self.checkCols(board, enemy) + self.checkBackwardDiagonals(board, enemy) + self.checkForwardDiagonals(board, enemy)
+
+    # check if the current player is StudentAgent itself
+    def getEnemyAgentID(self, players):
+
+        if players[0] == self.id:
+            return players[1]
+        else:
+            return players[0]
 
     # check rows
-    def checkRows(self, board):
+    def checkRows(self, board, enemy):
 
-        value = 0
+        myValue = 0
+        enemyValue = 0
 
         # 0 <= x < 6
         for x in range(0, board.DEFAULT_HEIGHT):
@@ -112,17 +124,23 @@ class StudentAgent(Agent):
                     temp.append(board.get_cell_value(x, y + col))
                 # print(temp)
                 has_oppo = False
+                enemy_has_oppo = False
                 for curr in temp:
-                    if curr != self.id and curr != 0:
+                    if curr == enemy:
                         has_oppo = True
+                    if curr == self.id:
+                        enemy_has_oppo = True
                 if has_oppo is False and temp.__contains__(self.id):
-                    value += 1
-        return value
+                    myValue += temp.count(self.id)
+                if enemy_has_oppo is False and temp.__contains__(enemy):
+                    enemyValue += temp.count(enemy)
+        return myValue - enemyValue
 
     # check columns
-    def checkCols(self, board):
+    def checkCols(self, board, enemy):
 
-        value = 0
+        myValue = 0
+        enemyValue = 0
 
         # 0 <= y < 7
         for y in range(0, board.DEFAULT_WIDTH):
@@ -134,17 +152,23 @@ class StudentAgent(Agent):
                     temp.append(board.get_cell_value(x + row, y))
                 # print(temp)
                 has_oppo = False
+                enemy_has_oppo = False
                 for curr in temp:
-                    if curr != self.id and curr != 0:
+                    if curr == enemy:
                         has_oppo = True
+                    if curr == self.id:
+                        enemy_has_oppo = True
                 if has_oppo is False and temp.__contains__(self.id):
-                    value += 1
-        return value
+                    myValue += temp.count(self.id)
+                if enemy_has_oppo is False and temp.__contains__(enemy):
+                    enemyValue += temp.count(enemy)
+        return myValue - enemyValue
 
     # check backward diagonal /
-    def checkBackwardDiagonals(self, board):
+    def checkBackwardDiagonals(self, board, enemy):
 
-        value = 0
+        myValue = 0
+        enemyValue = 0
 
         # 3 <= x < 6
         for x in range(board.num_to_connect - 1, board.DEFAULT_HEIGHT):
@@ -156,17 +180,23 @@ class StudentAgent(Agent):
                     temp.append(board.get_cell_value(x - back_diag, y + back_diag))
                 # print(temp)
                 has_oppo = False
+                enemy_has_oppo = False
                 for curr in temp:
-                    if curr != self.id and curr != 0:
+                    if curr == enemy:
                         has_oppo = True
+                    if curr == self.id:
+                        enemy_has_oppo = True
                 if has_oppo is False and temp.__contains__(self.id):
-                    value += 1
-        return value
+                    myValue += temp.count(self.id)
+                if enemy_has_oppo is False and temp.__contains__(enemy):
+                    enemyValue += temp.count(enemy)
+        return myValue - enemyValue
 
     # check forward diagonal \
-    def checkForwardDiagonals(self, board):
+    def checkForwardDiagonals(self, board, enemy):
 
-        value = 0
+        myValue = 0
+        enemyValue = 0
 
         # 0 <= x < 3
         for x in range(0, board.DEFAULT_HEIGHT - board.num_to_connect + 1):
@@ -178,9 +208,14 @@ class StudentAgent(Agent):
                     temp.append(board.get_cell_value(x + for_diag, y + for_diag))
                 # print(temp)
                 has_oppo = False
+                enemy_has_oppo = False
                 for curr in temp:
-                    if curr != self.id and curr != 0:
+                    if curr == enemy:
                         has_oppo = True
+                    if curr == self.id:
+                        enemy_has_oppo = True
                 if has_oppo is False and temp.__contains__(self.id):
-                    value += 1
-        return value
+                    myValue += temp.count(self.id)
+                if enemy_has_oppo is False and temp.__contains__(enemy):
+                    enemyValue += temp.count(enemy)
+        return myValue - enemyValue
