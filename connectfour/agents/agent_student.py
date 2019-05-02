@@ -35,10 +35,6 @@ class StudentAgent(Agent):
             vals.append(self.dfMiniMax(next_state, 1))
 
         bestMove = moves[vals.index(max(vals))]
-        print("id: ", self.id)
-        print(f"The Agent is going to place the token at: {bestMove}")
-        print(f"Evaluation of utility values: {vals}")
-        print("------------------------------------------------------------------------------------------------")
         return bestMove
 
     def dfMiniMax(self, board, depth):
@@ -61,19 +57,16 @@ class StudentAgent(Agent):
             vals.append(self.dfMiniMax(next_state, depth + 1))
 
         if depth % 2 == 1:
-            print(vals)
             if len(vals) != 0:
                 bestVal = min(vals)
             else:
                 bestVal = 0
         else:
-            print(vals)
             if len(vals) != 0:
                 bestVal = max(vals)
             else:
                 bestVal = 0
 
-        print(bestVal)
         return bestVal
 
     def evaluateBoardState(self, board):
@@ -109,15 +102,13 @@ class StudentAgent(Agent):
             winner()
         """
 
-        # # print the valid moves on board for current player
+        # print the valid moves on board for current player
         move = board.last_move
-        # print("current: ", move[0], move[1])
 
         # enemy agent's id
         enemy = self.id % 2 + 1
 
         value = self.evaluateRows(board, enemy) + self.evaluateCols(board, enemy) + self.evaluateBackwardDiagonals(board, enemy) + self.evaluateForwardDiagonals(board, enemy)
-        # print(value)
         return value
     # evaluation of rows (-)
     def evaluateRows(self, board, enemy):
@@ -130,7 +121,6 @@ class StudentAgent(Agent):
 
             # 0 <= y < 4
             for y in range(0, board.DEFAULT_WIDTH - board.num_to_connect + 1):
-                # print(x, y)
                 # create a list for storing temporary tokens for row
                 temp = []
                 for col in range(0, board.num_to_connect):
@@ -150,7 +140,7 @@ class StudentAgent(Agent):
 
                 # if there isn't opponent token and at least one my side token
                 if has_oppo is False and temp.__contains__(self.id):
-                    # print("a1")
+
                     # condition: [1,X,1,1] place "1" in X cell, must win in this move
                     #     win -> [1,1,1,1]
                     if temp.count(self.id) == 4:
@@ -182,8 +172,6 @@ class StudentAgent(Agent):
 
                 # if there is at least one enemy's opponent token
                 if enemy_has_oppo is True and temp.__contains__(enemy):
-                    # print("a2")
-                    # print("has ", temp.count(enemy), " enemies")
 
                     # if there are only three enemy's tokens
                     if temp.count(enemy) == 3:
@@ -191,17 +179,8 @@ class StudentAgent(Agent):
                         # condition: [2,2,X,2] place "1" in X cell, or will lose after this move
                         #      ok -> [2,2,1,2]
                         #    lose -> [2,2,2,2]
-                        # print("1: ", board.last_move[0])
-                        # print("2: ", board.last_move[1])
-                        # print("3: ", x)
-                        # print("4: ", y)
-                        # print("5: ", y + temp.index(self.id))
-                        # print("6: ", board.get_cell_value(5, 6))
-                        # print("7: ", board.get_cell_value(4, 6))
-                        # print("8: ", board.get_cell_value(4, 4))
                         if board.last_move[0] == x and board.last_move[1] == y + temp.index(self.id):
                             # print("lose: [2,2,X,2]")
-                            # print("row+1")
                             myValue += 100000
 
                     # if there are only two enemy's tokens
@@ -250,11 +229,9 @@ class StudentAgent(Agent):
 
                 # if there is not any enemy's opponent token and at least one enemy's token
                 if enemy_has_oppo is False and temp.__contains__(enemy):
-                    # print("a3")
-                    # print(x, y)
+
                     # if there are only three enemy's tokens
                     if temp.count(enemy) == 3:
-                        # print("b1")
                         next_board = board.next_state(enemy, y + temp.index(0))
                         if next_board != 0:
 
@@ -269,13 +246,6 @@ class StudentAgent(Agent):
                             if x == board.last_move[0] - 1:
                                 # print("lose: [2,2,_,2]")
                                 # print("      [1,2,X,1]")
-                                # print("row1")
-                                enemyValue += 100000
-
-                            # conditions: general -- [2,_,2,2] they include above?
-                            else:
-                                # print("lose: [2,_,2,2]")
-                                # print("row2")
                                 enemyValue += 100000
 
                         # condition: [2,2,_,2] place "1" in X cell, may lose in the end
@@ -289,8 +259,7 @@ class StudentAgent(Agent):
                             # print("losable: [2,2,_,2]")
                             # print("         [1,2,_,1]")
                             # print("         [1,1,X,2]")
-                            # print("c3")
-                            enemyValue += 100
+                            enemyValue += 1000
 
                     # if there is only two enemy's tokens
                     elif temp.count(enemy) == 2:
@@ -413,7 +382,6 @@ class StudentAgent(Agent):
                             # print("      [2]")
                             # print("      [2]")
                             # print("      [2]")
-                            # print("col")
                             enemyValue += 100000
 
                     # if there is only two enemy's tokens
@@ -585,19 +553,6 @@ class StudentAgent(Agent):
                                 # print("      [_,_,_,1]")
                                 # print("      [_,2,X,2]")
                                 # print("      [2,2,1,1]")
-                                # print("bdiag1")
-                                enemyValue += 100000
-
-                            # conditions: general -- [_,_,_,2] they include above?
-                            #                        [_,_,_,1]
-                            #                        [_,2,1,2]
-                            #                        [2,2,2,1]
-                            else:
-                                # print("lose: [_,_,_,2]")
-                                # print("      [_,_,_,1]")
-                                # print("      [_,2,1,2]")
-                                # print("      [2,2,2,1]")
-                                # print("bdiag2")
                                 enemyValue += 100000
 
                         # condition: [_,_,_,2] place "1" in X cell, may lose in the end
@@ -609,7 +564,7 @@ class StudentAgent(Agent):
                             # print("         [_,_,_,1]")
                             # print("         [_,2,_,2]")
                             # print("         [2,2,X,1]")
-                            enemyValue += 500
+                            enemyValue += 5000
 
                     # if there is only two enemy's tokens
                     elif temp.count(enemy) == 2:
@@ -769,7 +724,6 @@ class StudentAgent(Agent):
                     if temp.count(enemy) == 3:
                         next_board = board.next_state(enemy, y + temp.index(0))
                         if next_board != 0:
-
                             # condition: [2,_,_,_] place "1" in X cell, must lose after this move
                             #            [1,_,_,_]
                             #            [2,X,2,_]
@@ -779,19 +733,6 @@ class StudentAgent(Agent):
                                 # print("      [1,_,_,_]")
                                 # print("      [2,X,2,_]")
                                 # print("      [1,1,2,2]")
-                                # print("fdiag1")
-                                enemyValue += 100000
-
-                            # conditions: general -- [2,_,_,_] they include above?
-                            #                        [1,_,_,_]
-                            #                        [2,1,2,_]
-                            #                        [1,2,2,2]
-                            else:
-                                # print("lose: [2,_,_,_]")
-                                # print("      [1,_,_,_]")
-                                # print("      [2,1,2,_]")
-                                # print("      [1,2,2,2]")
-                                # print("fdiag2")
                                 enemyValue += 100000
 
                         # condition: [2,_,_,_] place "1" in X cell, may lose in the end
@@ -803,7 +744,7 @@ class StudentAgent(Agent):
                             # print("         [1,_,_,_]")
                             # print("         [2,_,2,_]")
                             # print("         [1,X,2,2]")
-                            enemyValue += 500
+                            enemyValue += 5000
 
                     # if there is only two enemy's tokens
                     elif temp.count(enemy) == 2:
