@@ -108,7 +108,7 @@ class StudentAgent(Agent):
 
         return self.evaluateRows(board, enemy) + self.evaluateCols(board, enemy) + self.evaluateBackwardDiagonals(board, enemy) + self.evaluateForwardDiagonals(board, enemy)
 
-    # evaluation of rows
+    # evaluation of rows (-)
     def evaluateRows(self, board, enemy):
 
         myValue = 0
@@ -177,7 +177,7 @@ class StudentAgent(Agent):
                         #      ok -> [2,2,1,2]
                         #    lose -> [2,2,2,2]
                         if board.last_move[0] == x and board.last_move[1] == y + temp.index(self.id):
-                            print("losable: [2,2,X,2]")
+                            print("lose: [2,2,X,2]")
                             myValue += 100000
 
                     # if there are only two enemy's tokens
@@ -203,10 +203,10 @@ class StudentAgent(Agent):
                             #            -----------
                             #         -> [_,2,2,2,_]
                             #    lose -> [2,2,2,2,_] or [_,2,2,2,2]
-                            if y + board.num_to_connect - 1 < board.DEFAULT_WIDTH:
-                                if board.get_cell_value(x, y + board.num_to_connect - 1) == 0:
-                                    next_board1 = board.next_state(enemy, y - 1)
-                                    next_board2 = board.next_state(enemy, y + board.num_to_connect - 1)
+                            if y + board.num_to_connect < board.DEFAULT_WIDTH:
+                                if board.get_cell_value(x, y + board.num_to_connect) == 0:
+                                    next_board1 = board.next_state(enemy, y)
+                                    next_board2 = board.next_state(enemy, y + board.num_to_connect)
                                     if next_board1 != 0 and next_board2 != 0:
                                         print("losable: [_,2,2,X,_]")
                                         myValue += 10000
@@ -226,7 +226,6 @@ class StudentAgent(Agent):
 
                 # if there is not any enemy's opponent token and at least one enemy's token
                 if enemy_has_oppo is False and temp.__contains__(enemy):
-                    print("enemy")
 
                     # if there are only three enemy's tokens
                     if temp.count(enemy) == 3:
@@ -270,7 +269,7 @@ class StudentAgent(Agent):
                         enemyValue += temp.count(enemy)
         return myValue - enemyValue
 
-    # evaluation of columns
+    # evaluation of columns (|)
     def evaluateCols(self, board, enemy):
 
         myValue = 0
@@ -389,7 +388,7 @@ class StudentAgent(Agent):
                         enemyValue += temp.count(enemy)
         return myValue - enemyValue
 
-    # check backward diagonal /
+    # evaluation of backward diagonals (/)
     def evaluateBackwardDiagonals(self, board, enemy):
 
         myValue = 0
@@ -400,44 +399,182 @@ class StudentAgent(Agent):
 
             # 0 <= y < 4
             for y in range(0, board.DEFAULT_WIDTH - board.num_to_connect + 1):
+
+                # create a list for storing temporary tokens for backward diagonal
                 temp = []
                 for back_diag in range(0, board.num_to_connect):
                     temp.append(board.get_cell_value(x - back_diag, y + back_diag))
-                # print(temp)
+
+                # boolean value to check if there is any opponent token in the list
                 has_oppo = False
+
+                # boolean value to check if there is any enemy's opponent token in the list
                 enemy_has_oppo = False
+
                 for curr in temp:
                     if curr == enemy:
                         has_oppo = True
                     if curr == self.id:
                         enemy_has_oppo = True
+
+                # if there isn't opponent token and at least one my side token
                 if has_oppo is False and temp.__contains__(self.id):
+
+                    # condition: [_,_,_,X] place "1" in X cell, must win in this move
+                    #            [_,_,1,2]
+                    #            [_,1,2,1]
+                    #            [1,1,2,1]
                     if temp.count(self.id) == 4:
-                        # print("Count 4, win b diag")
+                        print("win: [_,_,_,X]")
+                        print("win: [_,_,1,2]")
+                        print("win: [_,1,2,1]")
+                        print("win: [1,1,2,1]")
                         return 1000000
+
+                    # if there are only three my side tokens
+                    elif temp.count(self.id) == 3:
+                        if x - board.num_to_connect >= 0 and y + board.num_to_connect < board.DEFAULT_WIDTH:
+
+                            # condition: [_,_,_,_,_] place "1" in X cell, must win after next move
+                            #            [_,_,_,1,1]
+                            #            [_,_,X,1,2]
+                            #            [_,1,2,2,1]
+                            #            [_,2,1,1,2]
+                            if x - temp.index(self.id) - 1 == board.last_move[0] and y + temp.index(self.id) + 1 == board.last_move[1] and board.get_cell_value(x, y) == 0 and board.get_cell_value(x - board.num_to_connect, y + board.num_to_connect) == 0:
+                                next_board1 = board.next_state(enemy, y)
+                                next_board2 = board.next_state(enemy, y + board.num_to_connect)
+                                if next_board1 != 0 and next_board2 != 0:
+                                    print("winnable: [_,_,_,_,_]")
+                                    print("          [_,_,_,1,2]")
+                                    print("          [_,_,X,1,2]")
+                                    print("          [_,1,2,2,1]")
+                                    print("          [_,2,1,1,2]")
+                                    myValue += 10000
+                        else:
+                            myValue += 100
+
+                    # if there are one or two my side token(s)
                     else:
                         myValue += temp.count(self.id)
+
+                # if there is at least one enemy's opponent token
                 if enemy_has_oppo is True:
+
+                    # if there are only three enemy's tokens
                     if temp.count(enemy) == 3:
+
+                        # condition: [_,_,_,2] place "1" in X cell, or will lose after this move
+                        #            [_,_,X,1]
+                        #            [_,2,1,1]
+                        #            [2,1,2,2]
                         if board.last_move[0] == x - temp.index(self.id) and board.last_move[1] == y + temp.index(self.id):
+                            print("lose: [_,_,_,2]")
+                            print("      [_,_,X,1]")
+                            print("      [_,2,1,1]")
+                            print("      [2,1,2,2]")
                             myValue += 100000
+
+                    # if there are only two enemy's tokens
                     elif temp.count(enemy) == 2:
                         if board.last_move[0] == x and board.last_move[1] == y and temp[temp.index(enemy) + 1] == enemy and temp.index(enemy) in range(1, board.num_to_connect - 2):
-                            # print("Yeah")
-                            myValue += 10000
+
+                            # condition: [_,_,_,_,_] place "1" in X cell, or will lose after next move
+                            #            [_,_,_,2,1]
+                            #            [_,_,2,1,2]
+                            #            [_,X,1,2,1]
+                            #            [_,2,1,1,2]
+                            if x + 1 < board.DEFAULT_HEIGHT and y - 1 >= 0:
+                                if board.get_cell_value(x + 1, y - 1) == 0:
+                                    next_board1 = board.next_state(enemy, y - 1)
+                                    next_board2 = board.next_state(enemy, y + board.num_to_connect - 1)
+                                    if next_board1 != 0 and next_board2 != 0:
+                                        print("losable: [_,_,_,_,_]")
+                                        print("         [_,_,_,2,1]")
+                                        print("         [_,_,2,1,2]")
+                                        print("         [_,X,1,2,1]")
+                                        print("         [_,2,1,1,2]")
+                                        myValue += 10000
+                        if board.last_move[0] == x - board.num_to_connect + 1 and board.last_move[1] == y + board.num_to_connect - 1 and temp[temp.index(enemy) + 1] == enemy and temp.index(enemy) in range(1, board.num_to_connect - 2):
+
+                            # condition: [_,_,_,_,_] place "1" in X cell, or will lose after next move
+                            #            [_,_,_,X,1]
+                            #            [_,_,2,1,2]
+                            #            [_,2,1,2,1]
+                            #            [_,2,1,1,2]
+                            if x - board.num_to_connect >= 0 and y + board.num_to_connect < board.DEFAULT_WIDTH:
+                                if board.get_cell_value(x, y + board.num_to_connect) == 0:
+                                    next_board1 = board.next_state(enemy, y )
+                                    next_board2 = board.next_state(enemy, y + board.num_to_connect)
+                                    if next_board1 != 0 and next_board2 != 0:
+                                        print("losable: [_,_,_,_,_]")
+                                        print("         [_,_,_,X,1]")
+                                        print("         [_,_,2,1,2]")
+                                        print("         [_,2,1,2,1]")
+                                        print("         [_,2,1,1,2]")
+                                        myValue += 10000
                         if y + board.num_to_connect < board.DEFAULT_WIDTH:
+
+                            # condition: [_,_,_,_,_] place "1" in X cell, or will lose after next move
+                            #            [_,_,_,2,1]
+                            #            [_,_,X,1,2]
+                            #            [_,2,1,2,1]
+                            #            [_,2,1,1,2]
                             if x - temp.index(self.id) == board.last_move[0] and y + temp.index(self.id) == board.last_move[1] and board.get_cell_value(x, y) == 0 and board.get_cell_value(x, y + board.num_to_connect) == 0:
-                                myValue += 10000
+                                next_board1 = board.next_state(enemy, y)
+                                next_board2 = board.next_state(enemy, y + board.num_to_connect)
+                                if next_board1 != 0 and next_board2 != 0:
+                                    print("losable: [_,_,_,_,_]")
+                                    print("         [_,_,_,2,1]")
+                                    print("         [_,_,X,1,2]")
+                                    print("         [_,2,1,2,1]")
+                                    print("         [_,2,1,1,2]")
+                                    myValue += 10000
+
+                # if there is not any enemy's opponent token and at least one enemy's token
                 if enemy_has_oppo is False and temp.__contains__(enemy):
+
+                    # if there are only three enemy's tokens
                     if temp.count(enemy) == 3:
                         next_board = board.next_state(enemy, y + temp.index(0))
                         if next_board != 0:
+
+                            # condition: [_,_,_,2] place "1" in X cell, must lose after this move
+                            #            [_,_,_,1]
+                            #            [_,2,X,2]
+                            #            [2,2,1,1]
                             if x - temp.index(0) == board.last_move[0] - 1:
-                                # print("count 3, must lose b diag")
+                                print("lose: [_,_,_,2]")
+                                print("      [_,_,_,1]")
+                                print("      [_,2,X,2]")
+                                print("      [2,2,1,1]")
                                 enemyValue += 10000
+
+                            # conditions: general -- [_,_,_,2] they include above?
+                            #                        [_,_,_,1]
+                            #                        [_,2,1,2]
+                            #                        [2,2,2,1]
+                            else:
+                                print("lose: [_,_,_,2]")
+                                print("      [_,_,_,1]")
+                                print("      [_,2,1,2]")
+                                print("      [2,2,2,1]")
+                                enemyValue += 100000
+
+                        # condition: [_,_,_,2] place "1" in X cell, may lose in the end
+                        #            [_,_,_,1]
+                        #            [_,2,_,2]
+                        #            [2,2,X,1]
                         else:
-                            # print("count 3, may lose b diag")
+                            print("losable: [_,_,_,2]")
+                            print("         [_,_,_,1]")
+                            print("         [_,2,_,2]")
+                            print("         [2,2,X,1]")
                             enemyValue += 10
+
+                    # if there is one or two enemy's token(s)
+                    else:
+                        print("other conditions")
+                        enemyValue += temp.count(enemy)
         return myValue - enemyValue
 
     # check forward diagonal \
