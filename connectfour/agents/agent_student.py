@@ -106,10 +106,10 @@ class StudentAgent(Agent):
         # enemy agent's id
         enemy = self.id % 2 + 1
 
-        return self.checkRows(board, enemy) + self.checkCols(board, enemy) + self.checkBackwardDiagonals(board, enemy) + self.checkForwardDiagonals(board, enemy)
+        return self.evaluateRows(board, enemy) + self.evaluateCols(board, enemy) + self.evaluateBackwardDiagonals(board, enemy) + self.evaluateForwardDiagonals(board, enemy)
 
-    # check rows
-    def checkRows(self, board, enemy):
+    # evaluation of rows
+    def evaluateRows(self, board, enemy):
 
         myValue = 0
         enemyValue = 0
@@ -120,11 +120,10 @@ class StudentAgent(Agent):
             # 0 <= y < 4
             for y in range(0, board.DEFAULT_WIDTH - board.num_to_connect + 1):
 
-                # create a list for storing temporary tokens
+                # create a list for storing temporary tokens for row
                 temp = []
                 for col in range(0, board.num_to_connect):
                     temp.append(board.get_cell_value(x, y + col))
-                print(x, y)
 
                 # boolean value to check if there is any opponent token in the list
                 has_oppo = False
@@ -142,7 +141,7 @@ class StudentAgent(Agent):
                 if has_oppo is False and temp.__contains__(self.id):
 
                     # condition: [1,X,1,1] place "1" in X cell, must win in this move
-                    #         -> [1,1,1,1]
+                    #     win -> [1,1,1,1]
                     if temp.count(self.id) == 4:
                         print("win: [1,X,1,1]")
                         return 1000000
@@ -247,6 +246,11 @@ class StudentAgent(Agent):
                                 print("      [1,2,X,1]")
                                 enemyValue += 100000
 
+                            # conditions: general -- [2,_,2,2] they include above?
+                            else:
+                                print("lose: [2,_,2,2]")
+                                enemyValue += 100000
+
                         # condition: [2,2,_,2] place "1" in X cell, may lose in the end
                         #            [1,2,_,1]
                         #            [1,1,X,2]
@@ -260,14 +264,14 @@ class StudentAgent(Agent):
                             print("         [1,1,X,2]")
                             enemyValue += 10
 
-                    # the rest of the conditions
+                    # if there is one or two enemy's token(s)
                     else:
                         print("other conditions")
                         enemyValue += temp.count(enemy)
         return myValue - enemyValue
 
-    # check columns
-    def checkCols(self, board, enemy):
+    # evaluation of columns
+    def evaluateCols(self, board, enemy):
 
         myValue = 0
         enemyValue = 0
@@ -277,48 +281,116 @@ class StudentAgent(Agent):
 
             # 0 <= x < 3
             for x in range(0, board.DEFAULT_HEIGHT - board.num_to_connect + 1):
+
+                # create a list for storing temporary tokens for col
                 temp = []
                 for row in range(0, board.num_to_connect):
                     temp.append(board.get_cell_value(x + row, y))
-                # print(temp)
+
+                # boolean value to check if there is any opponent token in the list
                 has_oppo = False
+
+                # boolean value to check if there is any enemy's opponent token in the list
                 enemy_has_oppo = False
+
                 for curr in temp:
                     if curr == enemy:
                         has_oppo = True
                     if curr == self.id:
                         enemy_has_oppo = True
+
+                # if there isn't opponent token and at least one my side token
                 if has_oppo is False and temp.__contains__(self.id):
+
+                    # condition: [X] place "1" in X cell, must win in this move
+                    #            [1]
+                    #            [1]
+                    #            [1]
+                    #            ---
+                    #     win -> [1]
+                    #            [1]
+                    #            [1]
+                    #            [1]
                     if temp.count(self.id) == 4:
-                        # print("Count 4, win col")
+                        print("win: [X]")
+                        print("     [1]")
+                        print("     [1]")
+                        print("     [1]")
                         return 1000000
+
+                    # if there are only three my side tokens
+                    elif temp.count(self.id) == 3:
+
+                        # condition: [_] place "1" in X cell, may win in the end
+                        #            [X]
+                        #            [1]
+                        #            [1]
+                        #            ---
+                        #      ok -> [_]
+                        #            [1]
+                        #            [1]
+                        #            [1]
+                        if x - 1 == board.last_move[0] and y == board.last_move[1] and board.get_cell_value(x - 1, y) == 0:
+                            myValue += 100
+
+                    # if there are one or two my side token(s)
                     else:
                         myValue += temp.count(self.id)
+
+                # if there is at least one enemy's opponent token
                 if enemy_has_oppo is True:
+
+                    # if there are only three enemy's tokens
                     if temp.count(enemy) == 3:
-                        if board.last_move[0] == x + temp.index(self.id) and board.last_move[1] == y + temp.index(self.id):
+
+                        # condition: [X] place "1" in X cell, or will lose after this move
+                        #            [2]
+                        #            [2]
+                        #            [2]
+                        #            ---
+                        #    lose -> [2]
+                        #            [2]
+                        #            [2]
+                        #            [2]
+                        if board.last_move[0] == x and board.last_move[1] == y:
+                            print("losable: [X]")
+                            print("         [2]")
+                            print("         [2]")
+                            print("         [2]")
                             myValue += 100000
-                    elif temp.count(enemy) == 2:
-                        if x == board.last_move[0] and y == board.last_move[1] and temp[temp.index(enemy) + 1] == enemy and temp.index(enemy) in range(1, board.num_to_connect - 2):
-                            # print("Yeah")
-                            myValue += 10000
+
+                # if there is not any enemy's opponent token and at least one enemy's token
                 if enemy_has_oppo is False and temp.__contains__(enemy):
-                    # print("enemy")
+                    print("enemy")
+
+                    # if there are only three enemy's tokens
                     if temp.count(enemy) == 3:
-                        next_board = board.next_state(enemy, y + temp.index(0))
+                        next_board = board.next_state(enemy, y)
+
+                        # condition: [_] place "1" in another cell, must lose after this move
+                        #            [2]
+                        #            [2]
+                        #            [2]
+                        #            ---
+                        #    lose -> [2]
+                        #            [2]
+                        #            [2]
+                        #            [2]
                         if next_board != 0:
-                            # print("count 3, must lose col")
-                            enemyValue += 10000
-                        else:
-                            # print("count 3, may lose col")
-                            enemyValue += 10
+                            print("lose: [_]")
+                            print("      [2]")
+                            print("      [2]")
+                            print("      [2]")
+                            enemyValue += 100000
+
+                    # if there is one or two enemy's token(s)
                     else:
-                        # print("hghd")
-                        myValue += temp.count(enemy)
+                        print("other conditions")
+                        enemyValue += temp.count(enemy)
         return myValue - enemyValue
 
     # check backward diagonal /
-    def checkBackwardDiagonals(self, board, enemy):
+    def evaluateBackwardDiagonals(self, board, enemy):
 
         myValue = 0
         enemyValue = 0
@@ -369,7 +441,7 @@ class StudentAgent(Agent):
         return myValue - enemyValue
 
     # check forward diagonal \
-    def checkForwardDiagonals(self, board, enemy):
+    def evaluateForwardDiagonals(self, board, enemy):
 
         myValue = 0
         enemyValue = 0
