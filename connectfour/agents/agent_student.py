@@ -67,6 +67,7 @@ class StudentAgent(Agent):
             else:
                 bestVal = 0
 
+        # print(bestVal)
         return bestVal
 
     def evaluateBoardState(self, board):
